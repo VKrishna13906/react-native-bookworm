@@ -50,7 +50,7 @@ router.get("/", protectRoutes, async (req, res) => {
             .limit(limit) // no of data needs to be fetched
             .populate("user", "username profileImage");
 
-        const totalBooks = Book.countDocuments();
+        const totalBooks = await Book.countDocuments();
 
         res.send({
             books,
