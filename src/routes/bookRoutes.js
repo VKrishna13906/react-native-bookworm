@@ -40,8 +40,9 @@ router.post("/", protectRoutes, async (req, res) => {
 // to get all the post
 router.get("/", protectRoutes, async (req, res) => {
     try {
-        const page = req.query.page || 1;
-        const limit = req.query.limit || 5;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+
         const skip = (page - 1) * limit;
 
         const books = await Book.find()
@@ -68,7 +69,7 @@ router.get("/", protectRoutes, async (req, res) => {
 // to get the recommeded post
 router.get("/user", protectRoutes, async (req, res) => {
     try {
-        const books = await Book.find({ user: req.user._id }).sort({ createdAt: -1});
+        const books = await Book.find({ user: req.user._id }).sort({ createdAt: -1 });
         res.json(books);
     } catch (error) {
         console.log("Get user book errors", error);
