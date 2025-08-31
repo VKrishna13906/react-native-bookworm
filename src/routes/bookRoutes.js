@@ -84,7 +84,8 @@ router.delete("/:id", protectRoutes, async (req, res) => {
         if (!book) return res.status(404).json({ message: "Book not found" });
 
         // check if the user is the creator of the book
-        if (!book.user.toString() !== req.user._id.toString()) return res.status(401).json({ message: "Unauthorized" });
+        console.log("Book user: ", book.user.toString(), "Req", req.user._id.toString())
+        if (book.user.toString() !== req.user._id.toString()) return res.status(401).json({ message: "Unauthorized" });
 
         // deleting the image from cloudinary
         if (book.image && book.image.includes("cloudinary")) {
