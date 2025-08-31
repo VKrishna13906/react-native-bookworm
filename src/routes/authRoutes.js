@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 const router = express.Router();
 
 const generateToken = (userId) => {
-    return jwt.sign({userId}, process.env.JWT_SECRET, { expiresIn: "1d"});
+    return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "1d" });
 }
 
 router.post("/register", async (req, res) => {
@@ -21,23 +21,23 @@ router.post("/register", async (req, res) => {
         }
 
         if (username.length < 3) {
-            return res.status(400).json({ message: "Username should be at least 3 characters long"});
+            return res.status(400).json({ message: "Username should be at least 3 characters long" });
         }
 
         // check if the user already exists
-        const existingEmail = await User.findOne({email});
-        if (existingEmail) return res.status(400).json({ message: "Email already exists"});
+        const existingEmail = await User.findOne({ email });
+        if (existingEmail) return res.status(400).json({ message: "Email already exists" });
 
-        
-        const existingUser = await User.findOne({username});
-        if (existingUser) return res.status(400).json({ message: "User already exists"});
+
+        const existingUser = await User.findOne({ username });
+        if (existingUser) return res.status(400).json({ message: "User already exists" });
 
 
         // get random avatar
         const profileImage = `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`;
 
         const user = new User({
-            email, 
+            email,
             username,
             password,
             profileImage
@@ -48,11 +48,12 @@ router.post("/register", async (req, res) => {
         const token = generateToken(user._id);
         res.status(200).json({
             token,
-            user:{
+            user: {
                 _id: user._id,
                 username: user.username,
                 email: user.email,
-                profileImage: user.profileImage
+                profileImage: user.profileImage,
+                createdAt: user.createdAt
             }
         })
     } catch (error) {
@@ -64,25 +65,26 @@ router.post("/login", async (req, res) => {
     // res.send("login");
     try {
         const { email, password } = req.body;
-        
-        if(!email || !password) return res.status(400).json({ message: "All fields are required."});
+
+        if (!email || !password) return res.status(400).json({ message: "All fields are required." });
 
         // check if the user exists
         const user = await User.findOne({ email });
-        if(!user) return res.status(400).json({ message: "Invalid credentials."});
+        if (!user) return res.status(400).json({ message: "Invalid credentials." });
 
         // check if the password correct
         const isPasswordCorrect = await user.comparePassword(password);
-        if(!isPasswordCorrect) return res.status(400).json({ message: "Invalid credentials."});
+        if (!isPasswordCorrect) return res.status(400).json({ message: "Invalid credentials." });
 
         const token = generateToken(user._id);
         res.status(200).json({
             token,
-            user:{
+            user: {
                 _id: user._id,
                 username: user.username,
                 email: user.email,
-                profileImage: user.profileImage
+                profileImage: user.profileImage,
+                createdAt: user.createdAt
             }
         })
     } catch (error) {
